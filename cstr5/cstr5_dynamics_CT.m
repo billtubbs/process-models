@@ -83,33 +83,31 @@ function dx = cstr5_dynamics_CT(x, p, w, params)
         2 * f_star * x(2) * Z.I * exp( -E.I / (R*x(3)) ) ...
         / ( ZTd_exp_ETd + ZTc_exp_ETc ) ...
     );
-    
+
+    % Add process disturbances to each state
+    x = x + w;
+
     % State equations
-    % dx(1)
-    dCm = -( Zp_exp_Ep + Zfm_exp_Efm ) * x(1) * P0_CI ...
+    dx = nan(5, 1);
+
+    % dCm/dt
+    dx(1) = -( Zp_exp_Ep + Zfm_exp_Efm ) * x(1) * P0_CI ...
         + (Fm * Cm_in - F * x(1)) / V;
-    
-    % dx(2)
-    dCI = -Z.I * exp( -E.I / (R*x(3)) ) * x(2) ...
+
+    % dCI/dt
+    dx(2) = -Z.I * exp( -E.I / (R*x(3)) ) * x(2) ...
         + (FI * Ci_in - F * x(2)) / V;
-    
-    % dx(3)
-    dT = Zp_exp_Ep * x(1) * mDeltaHp / (rho * cp) * P0_CI ...
+
+    % dT/dt
+    dx(3) = Zp_exp_Ep * x(1) * mDeltaHp / (rho * cp) * P0_CI ...
         - U * A / (rho * cp * V) * (x(3) - Tj) + F*(Tin - x(3)) / V;
-    
-    % dx(4)
-    dD0 = ( ZTc_exp_ETc / 2 + ZTd_exp_ETd ) * P0_CI^2 ...
+
+    % dD0/dt
+    dx(4) = ( ZTc_exp_ETc / 2 + ZTd_exp_ETd ) * P0_CI^2 ...
         + Zfm_exp_Efm * x(1) * P0_CI - F * x(4) / V;
 
-    % dx(5)
-    dD1 = Mm * ( Zp_exp_Ep + Zfm_exp_Efm ) * x(1) * P0_CI ...
+    % dD1/dt
+    dx(5) = Mm * ( Zp_exp_Ep + Zfm_exp_Efm ) * x(1) * P0_CI ...
         - F * x(5) / V;
-    
-    % Add process disturbances to each state
-    dx = [dCm + w(1);
-          dCI + w(2);
-          dT + w(3);
-          dD0 + w(4);
-          dD1 + w(5)];
 
 end
