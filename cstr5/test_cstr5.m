@@ -11,7 +11,7 @@ n = size(x0, 1);
 
 t = 0;
 x = x0;
-w0 = zeros(n,5);  % process disturbances
+w0 = zeros(n,1);  % process disturbances
 [dx, y] = cstr5(t, x, p0, w0, params);
 assert(all(abs(dx ./ x0) < 1e-3))
 
