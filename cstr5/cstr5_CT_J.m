@@ -1,7 +1,8 @@
 function J = cstr5_CT_J(x, p, w, params)
-    % Jacobian matrix of continous-time CSTR model based on :
-    % - Daoutidis, Soroush, and Kravaris, 1990 and
-    %   presented by Robertson, Kesavan and Lee, 1995
+% J = cstr5_CT_J(x, p, w, params)
+% Jacobian matrix of continous-time CSTR model based on :
+% - Daoutidis, Soroush, and Kravaris, 1990 and
+%   presented by Robertson, Kesavan and Lee, 1995
 
     % State variables
     Cm = x(1);

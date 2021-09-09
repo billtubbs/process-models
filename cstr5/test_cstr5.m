@@ -18,7 +18,7 @@ assert(all(abs(dx ./ x0) < 1e-3))
 
 %% Check ODE calculation
 
-w0 = zeros(n,5);  % process disturbances
+w0 = zeros(n,1);  % process disturbances
 odefun = @ (t, x) cstr5(t, x, p0, w0, params);
 t_span = [0 20];
 [~, X] = ode45(odefun, t_span, x0);
@@ -29,7 +29,7 @@ assert(all(abs(x0_est - x0) < 0.1))
 
 %% Stability checks
 
-w0 = zeros(n,5);  % process disturbances
+w0 = zeros(n,1);  % process disturbances
 odefun = @ (t, x) cstr5(t, x, p0, w0, params);
 t_span = [0 20];
 dx0 = x0.*0.025;
@@ -59,7 +59,7 @@ assert(all(abs(X(end,:)' - x0) < 0.1))
 
 %% Differences experiment to estimate Jacobian
 
-w0 = zeros(n,5);  % process disturbances
+w0 = zeros(n,1);  % process disturbances
 odefun = @ (t, x) cstr5(t, x, p0, w0, params);
 J_est = nan(n, n);
 e = 0.001;
@@ -92,7 +92,7 @@ assert(all(all(abs(J - J_test) < 1e-3)))
 %% Differences experiment to estimate augmented Jacobian
 
 xa0 = [x0; p0];
-w0 = zeros(n,5);  % process disturbances
+w0 = zeros(n,1);  % process disturbances
 na = size(xa0,1);
 odefun7 = @ (t, x) [cstr5(t, x(1:n,1), x(n+1:na,1), w0, params); zeros(na-n,1)];
 J7_est = nan(na, na);
@@ -111,7 +111,7 @@ end
 
 % Test Jacobian
 xa0 = [x0; p0];
-w0 = zeros(n,5);  % process disturbances
+w0 = zeros(n,1);  % process disturbances
 J7 = cstr7_CT_J(xa0, w0, params);
 assert(all(all(abs(J7 - J7_est) < 1e-2)))
 
