@@ -20,7 +20,7 @@ function [dx, y] = arom3(t, x, p, w, params, varargin)
 % x(2) : Ch, outlet concentration of heptane, [gmol/m^3]
 % x(3) : Ct, outlet concentration of toluene, [gmol/m^3]
 %
-% Process disturbances
+% Process inputs (disturbances)
 % p(1) : k0, frequency factor, or pre-exponential factor [1/h]
 % p(2) : U, overall heat transfer coefficient [J/(gmol.K)]
 % 

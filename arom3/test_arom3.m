@@ -2,39 +2,55 @@
 
 clear all;
 
-% Load parameters from file cstr5_params.m
+% Load parameters from file arom3_params.m
 arom3_params
 
 n = size(x0, 1);
+
 
 %% Check nominal operating point
 
 t = 0;
 x = x0;
-w0 = zeros(n,1);  % process disturbances
+w0 = zeros(n, 1);  % process disturbances
 [dx, y] = arom3(t, x, p0, w0, params);
-assert(all(abs(dx ./ x0) < 5))
+assert(all(abs(dx ./ x0) < 0.01))
 
 
 %% Check ODE calculation
 
 w0 = zeros(n,1);  % process disturbances
 odefun = @ (t, x) arom3(t, x, p0, w0, params);
-t_span = linspace(0, 50, 401);
+t_span = linspace(0, 50, 901)';
 options = odeset('RelTol',1e-6);
 [~, X] = ode45(odefun, t_span, x0, options);
 
 % Plot evolution of states
 % figure(1)
-% plot(t_span, X)
+% ax1 = subplot(3, 1, 1);
+% plot(t_span, X(:, 1))
 % xlabel('t')
-% ylabel('Temperature [K] or concentration [gmol/m^3]')
+% ylabel('Temperature [K]')
 % grid on
-% legend('x_1(t)', 'x_2(t)', 'x_3(t)')
+% 
+% ax2 = subplot(3, 1, 2);
+% plot(t_span, X(:, 2));
+% xlabel('t')
+% ylabel('Concentration [gmol/m^3]')
+% grid on
+% 
+% ax3 = subplot(3, 1, 3);
+% plot(t_span, X(:, 3));
+% xlabel('t')
+% ylabel('Concentration [gmol/m^3]')
+% grid on
+% 
+% linkaxes([ax1 ax2 ax3], 'x')
 
 x0_est = X(end,:)';
-%fprintf("x0_est:\n%9.5f\n%9.5f\n%9.5f\n",x0_est)
 assert(all(abs(x0_est - x0) < 5))
+
+% TODO: x2 and x3 are off by 3.16
 
 
 %% Stability checks

@@ -2,11 +2,24 @@ function J = arom3_CT_J(x, p, w, params)
 % J = arom3_CT_J(x, p, w, params)
 % Jacobian matrix of continous-time model of aromatization
 % process with 3 states
+%
+% State variables
+% x(1) : T, reaction temperature, [K]
+% x(2) : Ch, outlet concentration of heptane, [gmol/m^3]
+% x(3) : Ct, outlet concentration of toluene, [gmol/m^3]
+%
+% Process disturbances
+% p(1) : k0, frequency factor, or pre-exponential factor [1/h]
+% p(2) : U, overall heat transfer coefficient [J/(gmol.K)]
 
     % State variables
-    T = x(1);
-    Ch = x(2);
-    Ct = x(3);
+    T = x(1);  % reaction temperature, [K]
+    Ch = x(2);  % outlet concentration of heptane, [gmol/m^3]
+    Ct = x(3);  % outlet concentration of toluene, [gmol/m^3]
+
+    % Parameter values from normalized values in p(k)
+    k0 = p(1) .* 1e8;  % frequency or pre-exponential factor [h^-1]
+    U = p(2) .* 1e5;  % overall heat transfer coefficient [J/(gmol.K)]
 
     % Constant parameter values:
     k0 = params.k0;  % frequency factor (1/h)
@@ -14,7 +27,7 @@ function J = arom3_CT_J(x, p, w, params)
     R = params.R;  % gas constant (J/(gmol.K))
 
     % Heat of reaction [J/gmol] as a function of temperature
-    DeltaH = params.DeltaH(x(1));
+    DeltaH = params.DeltaH(T);
 
     % Specific heat (molar)
     Cp = params.Cp;  % [J/(gmol.K)]
@@ -25,10 +38,6 @@ function J = arom3_CT_J(x, p, w, params)
     A = params.A;  % area of heat exchange, [m^2]
     V = params.V;  % effective reactor volume, [m^3]
     q = params.q;  % inlet and outlet volumetric flow rate, [m^3/h]
-
-    % Parameter values from normalized values in p(k)
-    k0 = p(1) .* 1e8;  % frequency or pre-exponential factor [h^-1]
-    U = p(2) .* 1e5;  % overall heat transfer coefficient [J/(gmol.K)]
 
     % Reaction rate constant
     rate_const = k0 * exp(-Ea / (R * x(1)));
