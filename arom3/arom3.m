@@ -1,4 +1,4 @@
-function [dx, y] = arom3(t, x, p, w, params, varargin)
+function [dx, y] = arom3(t, x, p, params, varargin)
 % [dx, y] = arom3(t, x, p, w, params, varargin)
 % Continous-time model of aromatization process with 3 states
 %
@@ -24,6 +24,10 @@ function [dx, y] = arom3(t, x, p, w, params, varargin)
 % p(1) : k0, frequency factor, or pre-exponential factor [1/h]
 % p(2) : U, overall heat transfer coefficient [J/(gmol.K)]
 % 
+% Output measurements
+% y(1) : x(1)
+% y(2) : x(3)
+%
 % Nominal values for the states and parameters
 % x0 = [742.0;  % reaction temperature, [K]
 %       463.0;  % outlet concentration of heptane, [gmol/m^3]
@@ -31,12 +35,16 @@ function [dx, y] = arom3(t, x, p, w, params, varargin)
 % p0 = [5e8 / 1e8;  % (normalized)
 %       6e5 / 1e5];  % (normalized)
 %
+% This function follows the conventions of grey-box model
+% files in MATLAB except that the parameters have been grouped
+% into a struct (therefore can't be estimated).
+%
 % See documentation on defining grey-box model files:
 % https://www.mathworks.com/help/ident/ug/creating-idnlgrey-model-files.html
-    
+
     % RHS of differential equation
-    dx = arom3_dynamics_CT(x, p, w, params);
-    
+    dx = arom3_dynamics_CT(x, p, params);
+
     % Output equations
     y = arom3_outputs(x, p);
 

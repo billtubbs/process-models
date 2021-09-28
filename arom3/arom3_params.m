@@ -63,7 +63,14 @@ x0 = [params.T0;   % reaction temperature, [K]
       params.Co_C7H16;   % outlet concentration of heptane, [gmol/m^3]
       params.Co_C7H8];   % outlet concentration of toluene, [gmol/m^3]
 
-% Normalized nominal parameter values
+% TODO: Currently, actual equilibrium point of the model is
+% closer to the following check equations to see if there 
+% is an error
+% x0 = [741.3094
+%       466.6194
+%       533.3806];
+
+% Normalized nominal input values (disturbances)
 p0 = [params.k0 / 1e8;
       params.U / 1e5];
 

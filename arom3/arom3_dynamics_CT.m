@@ -1,5 +1,5 @@
-function dx = arom3_dynamics_CT(x, p, w, params)
-% dx = arom3_dynamics_CT(x, p, w, params)
+function dx = arom3_dynamics_CT(x, p, params)
+% dx = arom3_dynamics_CT(x, p, params)
 % Continous-time model of aromatization process with 3 states
 %
 % Description:
@@ -20,10 +20,14 @@ function dx = arom3_dynamics_CT(x, p, w, params)
 % x(2) : Ch, outlet concentration of heptane, [gmol/m^3]
 % x(3) : Ct, outlet concentration of toluene, [gmol/m^3]
 %
-% Process disturbances
+% Process inputs (disturbances)
 % p(1) : k0, frequency factor, or pre-exponential factor [1/h]
 % p(2) : U, overall heat transfer coefficient [J/(gmol.K)]
 % 
+% Output measurements
+% y(1) : x(1)
+% y(2) : x(3)
+%
 % Nominal values for the states and parameters
 % x0 = [742.0;  % reaction temperature, [K]
 %       463.0;  % outlet concentration of heptane, [gmol/m^3]
@@ -65,9 +69,6 @@ function dx = arom3_dynamics_CT(x, p, w, params)
     u = [params.Ti;  % inlet temperature (preheated), [K]
          params.Ci_C7H16;  % inlet concentration of heptane, [gmol/m^3]
          params.Th];  % heating temperature, [K] (Tj in Robertson et al.)
-    
-    % Add process disturbances to states
-    u = u + w;
 
     % Reaction rate constant
     rate_const = k0 * exp(-Ea / (R * x(1)));

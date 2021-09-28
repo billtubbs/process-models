@@ -41,6 +41,10 @@ function [dx, y] = cstr5(t, x, p, w, params, varargin)
 %       6.6;  % kmol.m^-3
 %       ];
 %
+% This function follows the conventions of grey-box model
+% files in MATLAB except that the parameters have been grouped
+% into a struct (therefore can't be estimated).
+%
 % See documentation on defining grey-box model files:
 % https://www.mathworks.com/help/ident/ug/creating-idnlgrey-model-files.html
 

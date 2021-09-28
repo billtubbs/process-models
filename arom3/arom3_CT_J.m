@@ -1,5 +1,5 @@
-function J = arom3_CT_J(x, p, w, params)
-% J = arom3_CT_J(x, p, w, params)
+function J = arom3_CT_J(x, p, params)
+% J = arom3_CT_J(x, p, params)
 % Jacobian matrix of continous-time model of aromatization
 % process with 3 states
 %

@@ -11,18 +11,20 @@ n = size(x0, 1);
 %% Check nominal operating point
 
 t = 0;
-x = x0;
-w0 = zeros(n, 1);  % process disturbances
-[dx, y] = arom3(t, x, p0, w0, params);
+[dx, y] = arom3(t, x0, p0, params);
 assert(all(abs(dx ./ x0) < 0.01))
 
+% Actual equilibrium is closer to
+% x0 = [741.3094
+%       466.6194
+%       533.3806];
+% See below
 
 %% Check ODE calculation
 
-w0 = zeros(n,1);  % process disturbances
-odefun = @ (t, x) arom3(t, x, p0, w0, params);
-t_span = linspace(0, 50, 901)';
-options = odeset('RelTol',1e-6);
+odefun = @ (t, x) arom3(t, x, p0, params);
+t_span = linspace(0, 100, 6001)';
+options = odeset('RelTol', 1e-6);
 [~, X] = ode45(odefun, t_span, x0, options);
 
 % Plot evolution of states
@@ -55,8 +57,7 @@ assert(all(abs(x0_est - x0) < 5))
 
 %% Stability checks
 
-w0 = zeros(n,1);  % process disturbances
-odefun = @ (t, x) arom3(t, x, p0, w0, params);
+odefun = @ (t, x) arom3(t, x, p0, params);
 t_span = linspace(0, 50, 401);
 options = odeset('RelTol',1e-6);
 dx0 = x0.*0.025;
@@ -69,8 +70,7 @@ assert(all(abs(X(end,:)' - x0) < 5))
 
 %% Part factorial experiment
 
-w0 = zeros(n,1);  % process disturbances
-odefun = @ (t, x) arom3(t, x, p0, w0, params);
+odefun = @ (t, x) arom3(t, x, p0, params);
 t_span = linspace(0, 50, 401);
 options = odeset('RelTol',1e-6);
 dBB = bbdesign(n,'center',1);
@@ -91,8 +91,7 @@ end
 
 %% Differences experiment to estimate Jacobian
 
-w0 = zeros(n,1);  % process disturbances
-odefun = @ (t, x) arom3(t, x, p0, w0, params);
+odefun = @ (t, x) arom3(t, x, p0, params);
 J_est = nan(n, n);
 e = 0.00001;
 for i=1:n
@@ -109,7 +108,7 @@ end
 
 % Test Jacobian
 x = x0;
-J = arom3_CT_J(x, p0, w0, params);
+J = arom3_CT_J(x, p0, params);
 assert(sum(abs(J - J_est) < 1e-2, [1 2]) == 8)
 assert(abs(J(1, 1) - J_est(1, 1)) < 0.1)  % this estimate is not so close
 
@@ -124,9 +123,8 @@ assert(abs(J(1, 1) - J_test(1, 1)) < 0.1)  % this estimate is not so close
 % %% Differences experiment to estimate augmented Jacobian
 % 
 % xa0 = [x0; p0];
-% w0 = zeros(n,1);  % process disturbances
 % na = size(xa0,1);
-% odefun7 = @ (t, x) [cstr5(t, x(1:n,1), x(n+1:na,1), w0, params); zeros(na-n,1)];
+% odefun7 = @ (t, x) [cstr5(t, x(1:n,1), x(n+1:na,1), params); zeros(na-n,1)];
 % J7_est = nan(na, na);
 % e = 0.001;
 % for i=1:na
@@ -143,8 +141,7 @@ assert(abs(J(1, 1) - J_test(1, 1)) < 0.1)  % this estimate is not so close
 % 
 % % Test Jacobian
 % xa0 = [x0; p0];
-% w0 = zeros(n,1);  % process disturbances
-% J7 = cstr7_CT_J(xa0, w0, params);
+% J7 = cstr7_CT_J(xa0, params);
 % assert(all(all(abs(J7 - J7_est) < 1e-2)))
 % 
 % J7_test = [
@@ -157,8 +154,7 @@ assert(abs(J(1, 1) - J_test(1, 1)) < 0.1)  % this estimate is not so close
 %          0         0         0         0         0         0         0];
 % assert(all(all(abs(J7 - J7_test) < 1e-3)))
 % 
-% x = x0;
-% J = cstr5_CT_J(x, p0, w0, params);
+% J = cstr5_CT_J(x, p0, params);
 % assert(all(all((J7(1:5,1:5) - J) == 0)))
 
 
@@ -185,5 +181,5 @@ assert(abs(J(1, 1) - J_test(1, 1)) < 0.1)  % this estimate is not so close
 %     end
 % end
 % 
-% J7n = cstr7_CT_J(xa0, w0, params) .* xa0' ./ xa0;
+% J7n = cstr7_CT_J(xa0, params) .* xa0' ./ xa0;
 % assert(all(all(abs(J7n - J7n_est) < 2)))
