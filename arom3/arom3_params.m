@@ -28,7 +28,8 @@ params.R = 8.319;  % gas constant (J/(gmol.K))
 % range of interest here:
 
 % Heat of reaction [J/gmol] as a function of temperature
-params.DeltaH = @(T) 2.2026e5 + 6.20244e1*T - 5.536e-2*T^2 - 1.15e-6*T^3 + 3.1496e-7*T^4;
+params.cD = [3.1496e-7 -1.15e-6 -5.536e-2 6.20244e1 2.2026e5];
+params.DeltaH = @(T) params.cD * [T^4; T^3; T^2; T; 1];
 
 % Specific heat (molar)
 params.Cp = 490.7;  % [J/(gmol.K)]

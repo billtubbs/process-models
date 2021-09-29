@@ -109,16 +109,18 @@ end
 % Test Jacobian
 x = x0;
 J = arom3_CT_J(x, p0, params);
-assert(sum(abs(J - J_est) < 1e-2, [1 2]) == 8)
-assert(abs(J(1, 1) - J_est(1, 1)) < 0.1)  % this estimate is not so close
+assert(all(abs(J - J_est) < 1e-6, [1 2]))
 
 J_test = [
    -2.7147   -0.1327         0;
    -1.6149   -0.2167         0;
     1.6149    0.1167   -0.1000];
-assert(sum(abs(J - J_test) < 1e-2, [1 2]) == 8)
-assert(abs(J(1, 1) - J_test(1, 1)) < 0.1)  % this estimate is not so close
- 
+assert(isequal(round(J, 4), J_test))
+
+% TODO: Need to test arom3_StateJacobianFcn.m
+
+
+
 
 % %% Differences experiment to estimate augmented Jacobian
 % 

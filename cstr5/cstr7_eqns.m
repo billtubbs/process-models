@@ -67,11 +67,11 @@ n = size(x,1);
 assert(size(dx,1) == n)
 
 % Compute Jacobian
-J = sym('j', [n n]);
+dfdx = sym('dfdx', [n n]);
 for i=1:n
     for j=1:n
-        J(i,j) = simplify(diff(dx(i), x(j)));
-        fprintf("\nJ(%d, %d) = ",i,j)
-        disp(J(i,j))
+        dfdx(i,j) = simplify(diff(dx(i), x(j)));
+        fprintf("\ndfdx(%d, %d) = ", i, j)
+        disp(dfdx(i,j))
     end
 end

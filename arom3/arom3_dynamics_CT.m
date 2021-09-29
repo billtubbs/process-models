@@ -43,9 +43,6 @@ function dx = arom3_dynamics_CT(x, p, params)
     Ea = params.Ea;  % activation energy (J/gmol)
     R = params.R;  % gas constant (J/(gmol.K))
 
-    % Heat of reaction [J/gmol] as a function of temperature
-    DeltaH = params.DeltaH(x(1));
-
     % Specific heat (molar)
     Cp = params.Cp;  % [J/(gmol.K)]
 
@@ -69,6 +66,9 @@ function dx = arom3_dynamics_CT(x, p, params)
     u = [params.Ti;  % inlet temperature (preheated), [K]
          params.Ci_C7H16;  % inlet concentration of heptane, [gmol/m^3]
          params.Th];  % heating temperature, [K] (Tj in Robertson et al.)
+
+    % Heat of reaction [J/gmol] as a function of temperature
+    DeltaH = params.DeltaH(x(1));
 
     % Reaction rate constant
     rate_const = k0 * exp(-Ea / (R * x(1)));
