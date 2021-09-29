@@ -68,7 +68,8 @@ function dx = arom3_dynamics_CT(x, p, params)
          params.Th];  % heating temperature, [K] (Tj in Robertson et al.)
 
     % Heat of reaction [J/gmol] as a function of temperature
-    DeltaH = params.DeltaH(x(1));
+    cD = params.cD;
+    DeltaH = cD(5) + cD(4)*x(1) + cD(1)*x(1)^4 + cD(2)*x(1)^3 + cD(3)*x(1)^2;
 
     % Reaction rate constant
     rate_const = k0 * exp(-Ea / (R * x(1)));

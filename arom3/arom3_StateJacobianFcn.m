@@ -11,14 +11,14 @@ function dfdx = arom3_StateJacobianFcn(xk, pk, dt, params)
 % References:
 % - Watanabe, K. and D. M. Himmelblau (1983). Fault diagnosis
 %   in nonlinear chemical processes. AIChE J. 29, 243-261.
-%     Part I. x(1)heory
+%     Part I. xk(1)heory
 %     Part II. Application to a Chemical Reactor
 % - Robertson, D. G., and Lee, J. H. (1998). A Method for the
 %   Estimation of Infrequent Abrupt Changes in Nonlinear
 %   Systems.
 %
 % State variables
-% xk(1) : x(1), reaction temperature, [K]
+% xk(1) : xk(1), reaction temperature, [K]
 % xk(2) : Ch, outlet concentration of heptane, [gmol/m^3]
 % xk(3) : Ct, outlet concentration of toluene, [gmol/m^3]
 %
@@ -45,10 +45,6 @@ function dfdx = arom3_StateJacobianFcn(xk, pk, dt, params)
     Ea = params.Ea;  % activation energy (J/gmol)
     R = params.R;  % gas constant (J/(gmol.K))
 
-    % Heat of reaction [J/gmol] as a function of temperature
-    cD = params.cD;
-    DeltaH = cD * [xk(1)^4; xk(1)^3; xk(1)^2; xk(1); 1];
-
     % Specific heat (molar)
     Cp = params.Cp;  % [J/(gmol.K)]
 
@@ -59,36 +55,30 @@ function dfdx = arom3_StateJacobianFcn(xk, pk, dt, params)
     V = params.V;  % effective reactor volume, [m^3]
     q = params.q;  % inlet and outlet volumetric flow rate, [m^3/h]
 
+    % Heat of reaction [J/gmol] as a function of temperature
+    cD = params.cD;
+    DeltaH = cD * [xk(1)^4; xk(1)^3; xk(1)^2; xk(1); 1];
+    
+    % Partial derivative
+    dDeltaHdx1 = (cD(4) + 2*cD(3)*xk(1) + 4*cD(1)*xk(1)^3 + 3*cD(2)*xk(1)^2);
+    
     % Reaction rate constant
-    %rate_const = k0 * exp(-Ea / (R * xk(1)));
+    rate_const = k0 * exp(-Ea / (R * xk(1)));
 
     % Jacobian matrix
     dfdx = zeros(3, 3);
 
-    dfdx(1, 1) = 1 - dt*((k0*xk(2)*exp(-Ea/(R*xk(1))) * ...
-        (2*cD(3) + 6*cD(2)*xk(1) + 12*cD(1)*xk(1)^2))/(Cp*rho) ...
-        + (Ea^2*k0*xk(2)*exp(-Ea/(R*xk(1))) * DeltaH) / (Cp*R^2*rho*xk(1)^4) ...
-        + (2*Ea*k0*xk(2)*exp(-Ea/(R*xk(1))) * ...
-            (cD(4) + 2*cD(3)*xk(1) + 4*cD(1)*xk(1)^3 + 3*cD(2)*xk(1)^2)) / ...
-            (Cp*R*rho*xk(1)^2) ...
-        - (2*Ea*k0*xk(2)*exp(-Ea/(R*xk(1))) * DeltaH) / (Cp*R*rho*xk(1)^3));
+    dfdx(1, 1) = 1 - dt*((xk(2)*rate_const*(2*cD(3) + 6*cD(2)*xk(1) + 12*cD(1)*xk(1)^2))/(Cp*rho) + (Ea^2*xk(2)*rate_const*DeltaH)/(Cp*R^2*rho*xk(1)^4) + (2*Ea*xk(2)*rate_const*dDeltaHdx1)/(Cp*R*rho*xk(1)^2) - (2*Ea*xk(2)*rate_const*DeltaH)/(Cp*R*rho*xk(1)^3));
 
-    dfdx(1, 2) = -dt*((k0*exp(-Ea/(R*xk(1))) * ...
-            (cD(4) + 2*cD(3)*xk(1) + 4*cD(1)*xk(1)^3 + 3*cD(2)*xk(1)^2)) / (Cp*rho) ...
-        + (Ea*k0*exp(-Ea/(R*xk(1)))*DeltaH) / (Cp*R*rho*xk(1)^2));
+    dfdx(1, 2) = -dt*((rate_const*dDeltaHdx1)/(Cp*rho) + (Ea*rate_const*DeltaH)/(Cp*R*rho*xk(1)^2));
 
-    dfdx(1, 3) = 0;
+    dfdx(2, 1) = -(Ea*dt*xk(2)*rate_const*(Ea - 2*R*xk(1)))/(R^2*xk(1)^4);
 
-    dfdx(2, 1) = -(Ea*dt*k0*xk(2)*exp(-Ea/(R*xk(1))) * ...
-            (Ea - 2*R*xk(1))) / (R^2*xk(1)^4);
+    dfdx(2, 2) = 1 - (Ea*dt*rate_const)/(R*xk(1)^2);
 
-    dfdx(2, 2) = 1 - (Ea*dt*k0*exp(-Ea/(R*xk(1))))/(R*xk(1)^2);
+    dfdx(3, 1) = (Ea*dt*xk(2)*rate_const*(Ea - 2*R*xk(1)))/(R^2*xk(1)^4);
 
-    dfdx(2, 3) = 0;
-
-    dfdx(3, 1) = (Ea*dt*k0*xk(2)*exp(-Ea/(R*xk(1)))*(Ea - 2*R*xk(1))) / (R^2*xk(1)^4);
-
-    dfdx(3, 2) = (Ea*dt*k0*exp(-Ea/(R*xk(1))))/(R*xk(1)^2);
+    dfdx(3, 2) = (Ea*dt*rate_const)/(R*xk(1)^2);
 
     dfdx(3, 3) = 1;
 

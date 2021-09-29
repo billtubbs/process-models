@@ -20,10 +20,6 @@ function J = arom3_CT_J(x, p, params)
     Ea = params.Ea;  % activation energy (J/gmol)
     R = params.R;  % gas constant (J/(gmol.K))
 
-    % Heat of reaction [J/gmol] as a function of temperature
-    %DeltaH = params.DeltaH(x(1));
-    cD = params.cD;
-
     % Specific heat (molar)
     Cp = params.Cp;  % [J/(gmol.K)]
 
@@ -34,7 +30,14 @@ function J = arom3_CT_J(x, p, params)
     V = params.V;  % effective reactor volume, [m^3]
     q = params.q;  % inlet and outlet volumetric flow rate, [m^3/h]
 
+    % Intermediate calculations
+    % Heat of reaction [J/gmol] as a function of temperature
+    cD = params.cD;
+    DeltaH = cD(5) + cD(4)*x(1) + cD(1)*x(1)^4 + cD(2)*x(1)^3 + cD(3)*x(1)^2;
+
     % Reaction rate constant
+    %rate_const = k0 * exp(-Ea / (R * x(1)));
+    
     rate_const = k0 * exp(-Ea / (R * x(1)));
 
 %     % dT/dt, rate of change of reaction temperature
@@ -52,47 +55,21 @@ function J = arom3_CT_J(x, p, params)
 % 
 
     % Jacobian matrix
+    % (Derived symbolically using arom3_eqns.m)
+
     J = zeros(3, 3);
 
-%     J(1, 1) = - q / V ...
-%         - DeltaH * Ea * k0 * exp(-Ea/(R * x(1))) * x(2) / (Cp * rho * R * x(1)^2) ...
-%         - U * A / (rho * Cp * V);
-%     
-%     J(1, 2) = - DeltaH / (rho * Cp) * rate_const;
-%     
-%     J(2, 1) = -Ea * k0 * exp(-Ea / (R * x(1))) / (R * x(1)^2) * x(2);
-% 
-%     J(2, 2) = -q / V - rate_const;
-%     
-%     J(3, 1) = Ea * k0 * exp(-Ea / (R * x(1))) / (R * x(1)^2) * x(2);
-%     
-%     J(3, 2) = rate_const;
-% 
-%     J(3, 3) = -q / V;
+    J(1, 1) = - q/V - (A*U) / (Cp*V*rho) - (x(2)*rate_const*(cD(4) + 2*cD(3)*x(1) + 4*cD(1)*x(1)^3 + 3*cD(2)*x(1)^2)) / (Cp*rho) - (Ea*x(2)*rate_const*DeltaH) / (Cp*R*rho*x(1)^2);
 
-    % Recalculated with arom3_simplify.m:
+    J(1, 2) = -(rate_const*DeltaH) / (Cp*rho);
 
-    J(1, 1) = - q/V - (A*U)/(Cp*V*rho) ...
-        - (k0*x(2)*exp(-Ea/(R*x(1)))*(cD(4) + 2*cD(3)*x(1) ...
-        + 4*cD(1)*x(1)^3 + 3*cD(2)*x(1)^2))/(Cp*rho) ...
-        - (Ea*k0*x(2)*exp(-Ea/(R*x(1))) * ...
-            (cD(5) + cD(4)*x(1) + cD(1)*x(1)^4 + cD(2)*x(1)^3 + cD(3)*x(1)^2)) / ...
-                (Cp*R*rho*x(1)^2);
+    J(2, 1) = -(Ea*x(2)*rate_const) / (R*x(1)^2);
 
-    J(1, 2) = -(k0*exp(-Ea/(R*x(1))) * ...
-        (cD(5) + cD(4)*x(1) + cD(1)*x(1)^4 + cD(2)*x(1)^3 + cD(3)*x(1)^2)) / (Cp*rho);
+    J(2, 2) = - rate_const - q/V;
 
-    J(1, 3) = 0;
+    J(3, 1) = (Ea*x(2)*rate_const) / (R*x(1)^2);
 
-    J(2, 1) = -(Ea*k0*x(2)*exp(-Ea/(R*x(1))))/(R*x(1)^2);
-
-    J(2, 2) = - k0*exp(-Ea/(R*x(1))) - q/V;
-
-    J(2, 3) = 0;
-
-    J(3, 1) = (Ea*k0*x(2)*exp(-Ea/(R*x(1))))/(R*x(1)^2);
-
-    J(3, 2) = k0*exp(-Ea/(R*x(1)));
+    J(3, 2) = rate_const;
 
     J(3, 3) = -q/V;
 

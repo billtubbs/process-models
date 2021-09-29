@@ -83,8 +83,29 @@ for i = 1:nT
     X(i, :) = x';
 end
 
-%table(k_ind, t_sim, P, X, Y_m)
+% Simulation results
+sim_results = table(k_ind, t_sim, P, X, Y_m);
 
+% Values estimated from figure 1 in Robertson et al 1998
+
+T_test = [
+      0.0 740.6;
+      2.5 737.9;
+      5.0 745.0;
+      7.5 751.2;
+     10.0 750.5;
+     12.5 734.4
+];
+
+T_sim = nan(size(T_test));
+for i = 1:size(T_test, 1)
+    t = T_test(i, 1);
+    T = T_test(i, 2);
+    x_sim = sim_results{t_sim == t, 'X'};
+    T_sim(i, :) = [t x_sim(1)];
+    %fprintf("%f: %8f %8f\n", t, T, x_sim(1))
+end
+assert(all(abs(T_sim - T_test) < 1, [1 2]))
 
 % % Plot simulation output
 % 
@@ -105,7 +126,6 @@ end
 % grid on
 % 
 % linkaxes([ax1 ax2], 'x')
-% 
 % 
 % % Plot disturbance inputs
 % figure(2); clf
