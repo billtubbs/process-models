@@ -2,7 +2,6 @@ function dfdx = arom3_StateJacobianFcn(xk, pk, dt, params)
 % dfdx = arom3_StateJacobianFcn(xk, pk, dt, params)
 % Jacobian of the state transition function for the  
 % discrete-time model of the aromatization process with 3 states.
-% van der Pol ODEs for mu=1, with sample time 0.05s)
 %
 % Description:
 % - Heptane to toluene aromatization process model described
