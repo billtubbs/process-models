@@ -37,6 +37,7 @@ x0_test = [741.3093;
            533.3858];
 assert(all(abs(X(end,:)' - x0_test) < 0.01))
 
+return
 
 %% Replicate simulation in Robertson and Lee (1998)
 
@@ -71,8 +72,7 @@ end
 
 X = nan(nT+1, n);
 Y_m = nan(nT+1, ny);
-x = [740; 479; 532];  % estimated from fig. 1 
-%x = [737.0; 479.4; 520.6];  % from steady-state simulation
+x = [740; 479; 532];  % initial condition estimated from fig. 1
 for i = 1:nT
     k = k_ind(i);
     p = P(i, :)';

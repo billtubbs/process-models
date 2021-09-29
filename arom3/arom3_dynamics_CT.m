@@ -78,7 +78,7 @@ function dx = arom3_dynamics_CT(x, p, params)
     dx = nan(3, 1);
 
     % dT/dt, rate of change of reaction temperature
-    % (also x1 in Watanbe and H.)
+    % (x1 in Watanbe and H.)
     dx(1) = q / V * (u(1) - x(1)) - DeltaH / (rho * Cp) * rate_const * x(2) ...
         + U * A / (rho * Cp * V) * (u(3) - x(1));
 

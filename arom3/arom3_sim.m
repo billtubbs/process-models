@@ -1,6 +1,9 @@
 % Run a simulation of aromatization process model and save data
 
-clear all; clc;
+%TODO: DELETE THIS FILE -  it is redundant. test_arom3d contains a
+% discrete-time simulation based on Robertson et al.
+
+clear all;
 rng(1,'twister');
 
 %% Prepare directories
@@ -15,28 +18,29 @@ end
 % Load system parameters from file arom3_params.m
 arom3_params
 
-n = 3;
-ny = 3;
-nu = 3;
-np = 2;
-assert(size(x0, 1) == n)
-assert(size(p0, 1) == np)
+n = size(x0, 1);
+y0 = arom3_measurements(x0);
+ny = size(y0, 1);
+np = size(p0, 1);
 
 % Check nominal operating point
 t = 0;
-x = x0;
-w0 = zeros(n,1);  % process disturbances
-[dx, y] = arom3(t, x, p0, w0, params);
-assert(all(abs(dx) < 0.1))
+x = x0;  % states
+p = p0;  % inputs
+[dx, y] = arom3(t, x, p, params);
+assert(isequal(y, x([1 3])))
+assert(all(abs(dx(2:3)) < 0.5))
+assert(all(abs(dx(1)) < 1.5))  % op. pt. for T is a little off
 
-return
-
-
-% Check ODE calculation
-odefun = @ (t, y) arom3(t, y, p0, w0, params);
-t_span = [0 20];
-[t, X] = ode45(odefun, t_span, x0);
-assert(all(abs(X(end,:)' - x0) < 0.1))
+% Find equilibrium pt. with ODE solver
+odefun = @ (t, x) arom3(t, x, p0, params);
+t_span = linspace(0, 100, 6001)';
+options = odeset('RelTol', 1e-7);
+[~, X] = ode45(odefun, t_span, x0, options);
+x0_test = [741.3090  
+           466.6192;  
+           533.3808];
+assert(isequal(round(X(end,:)', 4), x0_test))
 
 
 %% Simulate system
@@ -69,7 +73,7 @@ switch sim_case
     p_init = [6.75; 6.6];  % approx values for sim #1 in Robertson
 
     % find steady-state solution
-    odefun = @ (t, y) cstr5(t, y, p_init, w0, params);
+    odefun = @ (t, y) arom3(t, y, p_init, w0, params);
     t_span = [0 20];
     [t, X] = ode45(odefun, t_span, x0);
     x_init = X(end,:)'
@@ -101,7 +105,7 @@ switch sim_case
     p_init = [8.4; 6.2];  % approx values for sim #2 in Robertson
 
     % find steady-state solution
-    odefun = @ (t, y) cstr5(t, y, p_init, w0, params);
+    odefun = @ (t, y) arom3(t, y, p_init, w0, params);
     t_span = [0 20];
     [t, X] = ode45(odefun, t_span, x0);
     x_init = X(end,:)'
@@ -138,7 +142,7 @@ switch sim_case
     sigma_v = [0; 0]
     
     % find steady-state solution
-    odefun = @ (t, y) cstr5(t, y, p_init, w0, params);
+    odefun = @ (t, y) arom3(t, y, p_init, params);
     t_span = [0 20];
     [t, X] = ode45(odefun, t_span, x0);
     x_init = X(end,:)';
@@ -174,7 +178,7 @@ switch sim_case
     p_init = (0.4.*rand(nu,1) + 0.8) .* p0
     
     % find steady-state solution
-    odefun = @ (t, y) cstr5(t, y, p_init, w0, params);
+    odefun = @ (t, y) arom3(t, y, p_init, w0, params);
     t_span = [0 20];
     [t, X] = ode45(odefun, t_span, x0);
     x_init = X(end,:)';
@@ -201,17 +205,19 @@ end
 
 
 %% Simulate trajectory
-odefun = @ (t, x) cstr5(t, x, p_func(t), w0, params);
+odefun = @ (t, x) arom3(t, x, p_func(t), params);
 
 % Solve initial value problem
-[t_sim, X] = ode45(odefun, t_sim, x_init);
-nT = size(X,1) - 1;
+odefun = @ (t, x) arom3(t, x, p0, params);
+options = odeset('RelTol', 1e-7);
+[~, X] = ode45(odefun, t_sim, x0, options);
+nT = size(X, 1) - 1;
 
 % Compute outputs - with measurement noise
 Y = nan(nT+1, ny);
 Ym = nan(size(Y));
 for i = 1:nT+1
-    Y(i,:) = cstr5_measurements(X(i,:))';
+    Y(i,:) = arom3_measurements(X(i,:))';
     % Add measurement noise
     vk = randn(2,1).*sqrt(sigma_v);
     Ym(i,:) = Y(i,:) + vk';

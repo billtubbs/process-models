@@ -15,9 +15,9 @@ t = 0;
 assert(all(abs(dx ./ x0) < 0.01))
 
 % Actual equilibrium is closer to
-% x0 = [741.3094
-%       466.6194
-%       533.3806];
+% x0 = [741.3090  
+%       466.6192;  
+%       533.3808];
 % See test below
 
 
@@ -25,7 +25,7 @@ assert(all(abs(dx ./ x0) < 0.01))
 
 odefun = @ (t, x) arom3(t, x, p0, params);
 t_span = linspace(0, 100, 6001)';
-options = odeset('RelTol', 1e-6);
+options = odeset('RelTol', 1e-7);
 [~, X] = ode45(odefun, t_span, x0, options);
 
 % Plot evolution of states
