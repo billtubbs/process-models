@@ -39,7 +39,6 @@ function dx = arom3_dynamics_CT(x, p, params)
 % https://www.mathworks.com/help/ident/ug/creating-idnlgrey-model-files.html
 
     % Constant parameter values:
-    k0 = params.k0;  % frequency factor (1/h)
     Ea = params.Ea;  % activation energy (J/gmol)
     R = params.R;  % gas constant (J/(gmol.K))
 

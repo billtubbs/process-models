@@ -19,7 +19,7 @@ x = sym('x', [n 1]);
 %x = [T;   % reaction temperature, [K]
 %     Ch;  % outlet concentration of heptane, [gmol/m^3]
 %     Ct]; % outlet concentration of toluene, [gmol/m^3]
- 
+
 % Process inputs (constant here)
 u = [Ti;        % inlet temperature (preheated), [K]
      Ci_C7H16;  % inlet concentration of heptane, [gmol/m^3]
@@ -82,23 +82,35 @@ for i = 1:n
     end
 end
 
-% State transition function (for discrete simulation)
-xkp1 = x + dt*J;
+% Augmented observer model (with unmeasured disturbance
+% inputs)
+na = n + 2;
+xak = sym('xak', [na 1]);
 
-% Compute Jacobian of state transition function
-fprintf("\nJacobian of StateFcn:\n")
-dfdx = sym('dfdx', [n n]);
-for i = 1:n
-    for j = 1:n
-        dfdx(i, j) = simplify(diff(xkp1(i), x(j)));
-        expr = sprintf("%s", dfdx(i, j));
-        expr = replace_array_symbols(expr, 'x', 'xk', n);
+% Continuous-time differential equations for process states
+xkp1 = x + dxdt * dt;
+
+% Augmented states are discrete-time integrators
+xakp1 = [subs(xkp1, x, xak(1:3)); xak(4:5)];
+
+% Compute Jacobian of state transition function of
+% augmented model
+fprintf("\nJacobian of augmented StateFcn:\n")
+dfdax = sym('dfdax', [na na]);
+for i = 1:na
+    for j = 1:na
+        % Substitute the parameters with the unnormalized state variables
+        xakp1B = subs(xakp1(i), [k0, U], [xak(4) .* 1e8, xak(5) .* 1e5]);
+        dfdxa(i, j) = simplify(diff(xakp1B, xak(j)));
+        expr = sprintf("%s", dfdxa(i, j));
+        expr = replace_array_symbols(expr, 'xak', 'xak', na);
         expr = replace_array_symbols(expr, 'cD', 'cD', 5);
-        fprintf("\ndfdx(%d, %d) = %s;\n", i, j, expr)
+        fprintf("\ndfdxa(%d, %d) = %s;\n", i, j, expr)
     end
 end
 
-
+% Function to replace 'x1' etc with 'x(1)' in string
+% representation of expression
 function newExpr = replace_array_symbols(expr, v, vnew, n)
     newExpr = expr;
     for i = 1:n

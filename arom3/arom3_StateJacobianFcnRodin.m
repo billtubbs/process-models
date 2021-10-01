@@ -11,7 +11,7 @@ function dfdxa = arom3_StateJacobianFcnRodin(xak, dt, params)
 % References:
 % - Watanabe, K. and D. M. Himmelblau (1983). Fault diagnosis
 %   in nonlinear chemical processes. AIChE J. 29, 243-261.
-%     Part I. xak(1)heory
+%     Part I. Theory
 %     Part II. Application to a Chemical Reactor
 % - Robertson, D. G., and Lee, J. H. (1998). A Method for the
 %   Estimation of Infrequent Abrupt Changes in Nonlinear
@@ -55,6 +55,9 @@ function dfdxa = arom3_StateJacobianFcnRodin(xak, dt, params)
     V = params.V;  % effective reactor volume, [m^3]
     q = params.q;  % inlet and outlet volumetric flow rate, [m^3/h]
 
+    % Process inputs (constant here)
+    Th = params.Th;  % heating temperature, [K] (Tj in Robertson et al.)
+
     % Heat of reaction [J/gmol] as a function of temperature
     cD = params.cD;
     DeltaH = cD * [xak(1)^4; xak(1)^3; xak(1)^2; xak(1); 1];
@@ -66,31 +69,32 @@ function dfdxa = arom3_StateJacobianFcnRodin(xak, dt, params)
     rate_const = k0 * exp(-Ea / (R * xak(1)));
 
     % Jacobian matrix
-    dfdxa = zeros(5, 5);
-
     dfdxa(1, 1) = 1 - dt*( ...
-            (xak(2)*rate_const*(2*cD(3) + 6*cD(2)*xak(1) + 12*cD(1)*xak(1)^2)) ...
-            / (Cp*rho) + (Ea^2*xak(2)*rate_const*DeltaH) / (Cp*R^2*rho*xak(1)^4) ...
-            + (2*Ea*xak(2)*rate_const*dDeltaHdx1)/(Cp*R*rho*xak(1)^2) ...
-            - (2*Ea*xak(2)*rate_const*DeltaH)/(Cp*R*rho*xak(1)^3) ...
+            q/V + (A*U)/(Cp*V*rho) ...
+            + (xak(2)*rate_const*(cD(4) + 2*cD(3)*xak(1) + 4*cD(1)*xak(1)^3 + 3*cD(2)*xak(1)^2)) ...
+                / (Cp*rho) ...
+            + (xak(2)*Ea*rate_const*DeltaH) / (Cp*R*rho*xak(1)^2) ...
         );
 
-    dfdxa(1, 2) = -dt*( ...
-            (rate_const*dDeltaHdx1)/(Cp*rho) ...
-            + (Ea*rate_const*DeltaH)/(Cp*R*rho*xak(1)^2) ...
-        );
+    dfdxa(1, 2) = -(dt*rate_const*DeltaH) / (Cp*rho);
 
-    dfdxa(2, 1) = -(Ea*dt*xak(2)*rate_const*(Ea - 2*R*xak(1)))/(R^2*xak(1)^4);
+    dfdxa(1, 4) = -(100000000*dt*xak(2)*exp(-Ea/(R*xak(1)))*DeltaH) / (Cp*rho);
 
-    dfdxa(2, 2) = 1 - (Ea*dt*rate_const)/(R*xak(1)^2);
+    dfdxa(1, 5) = (100000*A*dt*(Th - xak(1))) / (Cp*V*rho);
 
-    dfdxa(3, 1) = (Ea*dt*xak(2)*rate_const*(Ea - 2*R*xak(1)))/(R^2*xak(1)^4);
+    dfdxa(2, 1) = -(Ea*dt*xak(2)*rate_const) / (R*xak(1)^2);
 
-    dfdxa(3, 2) = (Ea*dt*rate_const)/(R*xak(1)^2);
+    dfdxa(2, 2) = 1 - dt*(rate_const + q/V);
 
-    % TODO: more derivative terms to add
-    
-    dfdxa(3, 3) = 1;
+    dfdxa(2, 4) = -100000000*dt*xak(2)*exp(-Ea/(R*xak(1)));
+
+    dfdxa(3, 1) = (Ea*dt*xak(2)*rate_const) / (R*xak(1)^2);
+
+    dfdxa(3, 2) = dt*rate_const;
+
+    dfdxa(3, 3) = 1 - (dt*q) / V;
+
+    dfdxa(3, 4) = 100000000*dt*xak(2)*exp(-Ea/(R*xak(1)));
 
     dfdxa(4, 4) = 1;
 

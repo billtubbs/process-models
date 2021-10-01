@@ -1,7 +1,7 @@
-function Ha = arom3_measJacRodin(xa)
-% Ha = arom3_measJacRodin(xa)
+function Ha = arom3_MeasurementJacobianFcnRodin2(xa)
+% Ha = arom3_MeasurementJacobianFcnRodin2(xa)
 % Jacobian matrix of measurement function of aromatization
-% process augmented with two input disturbances.
+% process with 3 states and 2 measured outputs (T, Ct).
 %
 % State variables
 % xa(1) : T, reaction temperature, [K]

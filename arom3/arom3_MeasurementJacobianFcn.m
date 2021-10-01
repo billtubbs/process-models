@@ -1,7 +1,7 @@
 function Ha = arom3_MeasurementJacobianFcn(x)
 % Ha = arom3_MeasurementJacobianFcn(x)
 % Jacobian matrix of measurement function of aromatization
-% process with 3 states
+% process with 3 states and 2 measured outputs.
 %
 % State variables
 % x(1) : T, reaction temperature, [K]

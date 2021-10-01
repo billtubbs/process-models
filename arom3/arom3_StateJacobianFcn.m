@@ -10,7 +10,7 @@ function dfdx = arom3_StateJacobianFcn(xk, pk, dt, params)
 % References:
 % - Watanabe, K. and D. M. Himmelblau (1983). Fault diagnosis
 %   in nonlinear chemical processes. AIChE J. 29, 243-261.
-%     Part I. xk(1)heory
+%     Part I. Theory
 %     Part II. Application to a Chemical Reactor
 % - Robertson, D. G., and Lee, J. H. (1998). A Method for the
 %   Estimation of Infrequent Abrupt Changes in Nonlinear
