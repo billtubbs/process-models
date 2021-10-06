@@ -38,7 +38,7 @@ function y = arom3_outputs(x, p, w)
 % This function follows the conventions of grey-box model
 % files in MATLAB except that the parameters have been grouped
 % into a struct (therefore can't be estimated).
-    
+
     % Output equations (outputs = measurements)
     y = arom3_measurements(x);
 

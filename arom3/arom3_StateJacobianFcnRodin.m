@@ -1,5 +1,5 @@
-function dfdxa = arom3_StateJacobianFcnRodin(xak, dt, params)
-% dfdxa = arom3_StateJacobianFcnRodin(xak, dt, params)
+function dfdxa = arom3_StateJacobianFcnRodin(xak, uk, dt, params)
+% dfdxa = arom3_StateJacobianFcnRodin(xak, uk, dt, params)
 % Jacobian of the state transition function for the discrete-
 % time model of the aromatization process augmented with two 
 % input disturbances.

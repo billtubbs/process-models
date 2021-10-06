@@ -1,5 +1,5 @@
-function y = arom3_MeasurementFcnRodin2(xa)
-% y = arom3_MeasurementFcnRodin2(xa)
+function y = arom3_MeasurementFcnRodin2(xa, uk, dt, params)
+% y = arom3_MeasurementFcnRodin2(xa, uk, dt, params)
 % Measurement equations for aromatization process augmented
 % with two input disturbances.
 %

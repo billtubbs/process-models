@@ -1,7 +1,6 @@
-function y = arom3_MeasurementFcnRodin1(xa, uk, dt, params)
-% y = arom3_MeasurementFcnRodin1(xa, uk, dt, params)
-% Measurement equations for aromatization process augmented
-% with two input disturbances.
+function y = arom3_MeasurementFcn(xk, pk, dt, params)
+% y = arom3_MeasurementFcn(xk, pk, dt, params)
+% Measurement equations for aromatization process with 3 states
 %
 % Description:
 % - Heptane to toluene aromatization process model described
@@ -17,16 +16,17 @@ function y = arom3_MeasurementFcnRodin1(xa, uk, dt, params)
 %   Systems.
 %
 % State variables
-% xa(1) : T, reaction temperature, [K]
-% xa(2) : Ch, outlet concentration of heptane, [gmol/m^3]
-% xa(3) : Ct, outlet concentration of toluene, [gmol/m^3]
+% x(1) : T, reaction temperature, [K]
+% x(2) : Ch, outlet concentration of heptane, [gmol/m^3]
+% x(3) : Ct, outlet concentration of toluene, [gmol/m^3]
 %
-% Process disturbances (time-varying parameters)
-% xa(4) : k0, frequency factor, or pre-exponential factor [1/h]
-% xa(5) : U, overall heat transfer coefficient [J/(gmol.K)]
+% Process inputs (disturbances)
+% p(1) : k0, frequency factor, or pre-exponential factor [1/h]
+% p(2) : U, overall heat transfer coefficient [J/(gmol.K)]
 % 
 % Output measurements
 % y(1) : x(1)
+% y(2) : x(3)
 %
 % Nominal values for the states and parameters
 % x0 = [742.0;  % reaction temperature, [K]
@@ -36,6 +36,6 @@ function y = arom3_MeasurementFcnRodin1(xa, uk, dt, params)
 %       6e5 / 1e5];  % (normalized)
 
     % Output equations
-    y = xa(1);  % T, reaction temperature, [K]
+    y = arom3_measurements(xk);
 
 end

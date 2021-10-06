@@ -1,6 +1,6 @@
 function [dx, y] = arom3(t, x, p, params, varargin)
 % [dx, y] = arom3(t, x, p, w, params, varargin)
-% Continous-time model of aromatization process with 3 states
+% Continous-time model of aromatization process with 3 states.
 %
 % Description:
 % - Heptane to toluene aromatization process model described

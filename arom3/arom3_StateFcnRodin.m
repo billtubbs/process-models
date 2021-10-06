@@ -1,5 +1,5 @@
-function xakp1 = arom3_StateFcnRodin(xak, dt, params)
-% xakp1 = arom3_StateFcnRodin(xak, dt, params)
+function xakp1 = arom3_StateFcnRodin(xak, pk, dt, params)
+% xakp1 = arom3_StateFcnRodin(xak, pk, dt, params)
 % State transition function for the discrete-time model of 
 % the aromatization process augmented with two input
 % disturbances.
