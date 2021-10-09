@@ -10,5 +10,10 @@ function yk = pend_yk(xk,uk,params)
 % uk : torque (not used by this function).
 % params : struct (not used by this function).
 %
+    % For unit tests
+    assert(isequal(fieldnames(params), {'K', 'm', 'L', 'g', 'dt'}'))
+    assert(isequal(size(xk),[2 1]))
+    assert(isscalar(uk))
+
     yk = xk(1);
 end

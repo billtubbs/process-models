@@ -11,8 +11,12 @@ function y = pend_MeasurementFcn(xak,uk,params)
 % u : torque (not used by this function).
 % params : struct (not used by this function).
 %
-    % For testing ekf_update.m
+    % For unit tests
+    % For unit tests
     assert(isequal(fieldnames(params), {'K', 'm', 'L', 'g', 'dt'}'))
-    y = xak(1) + xak(3);
+    assert(isequal(size(xak),[3 1]))
+    assert(isscalar(uk))
+
+    y = xak(1);
 
 end
