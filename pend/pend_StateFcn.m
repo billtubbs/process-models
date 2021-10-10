@@ -4,11 +4,11 @@ function xakp1 = pend_StateFcn(xak,uk,params)
 % system augmented with an output disturbance.
 %
 % Arguments:
-% xak : state vector [x1; x2] where
+% xak : augmented state vector [xak1; xak2; xak3] where
 %     xak(1) : angle
 %     xak(2) : angular velocity
 %     xak(3) : input disturbance model state.
-% uk : Torque input.
+% uk : torque input.
 % params : struct containing the parameter values
 %     listed below.
 %

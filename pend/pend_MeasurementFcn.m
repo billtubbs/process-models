@@ -4,11 +4,11 @@ function y = pend_MeasurementFcn(xak,uk,params)
 % system augmented with an output disturbance.
 %
 % Arguments:
-% xa : state vector [x1; x2] where
-%     x1 : angle
-%     x2 : angular velocity
-%     xi : integrator state.
-% u : torque (not used by this function).
+% xak : augmented state vector [xak1; xak2; xak3] where
+%     xak(1) : angle
+%     xak(2) : angular velocity
+%     xak(3) : input disturbance model state.
+% uk : torque input (not used by this function).
 % params : struct (not used by this function).
 %
     % For unit tests

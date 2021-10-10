@@ -15,5 +15,7 @@ function yk = pend_yk(xk,uk,params)
     assert(isequal(size(xk),[2 1]))
     assert(isscalar(uk))
 
+    % y(k)
     yk = xk(1);
+
 end

@@ -44,7 +44,7 @@ for j = 1:N
 
     % Get states at next sample time
     xkp1 = pend_xkp1(xk, uk+pk, params);
-    xakp1 = pend_StateFcn(xak, uk+pk, params);
+    xakp1 = pend_StateFcn(xak, uk, params);
 
     % Record data
     data(j,:) = [k(j) t(j) uk pk xkp1' yk xakp1' yak];
@@ -70,12 +70,12 @@ assert(isequal( ...
 ))
 
 % Compare augmented model results
-sim_results{selection, {'t', 'xa1(k+1)', 'xa2(k+1)', 'xa3(k+1)', 'ya(k)'}}
-bench_sim_results{selection, {'t', 'x1(k+1)', 'x2(k+1)', 'p(k)', 'y(k)'}}
-%assert(isequal( ...
-%    round(sim_results{:, {'t', 'xa1(k+1)', 'xa2(k+1)', 'xa3(k+1)', 'ya(k)'}}, 4), ...
-%    round(bench_sim_results{:, {'t', 'x1(k+1)', 'x2(k+1)', 'p(k)', 'y(k)'}}, 4) ...
-%))
+%sim_results{selection, {'t', 'xa1(k+1)', 'xa2(k+1)', 'xa3(k+1)', 'ya(k)'}}
+%bench_sim_results{selection, {'t', 'x1(k+1)', 'x2(k+1)', 'p(k)', 'y(k)'}}
+assert(isequal( ...
+   round(sim_results{:, {'t', 'xa1(k+1)', 'xa2(k+1)', 'xa3(k+1)', 'ya(k)'}}, 4), ...
+   round(bench_sim_results{:, {'t', 'x1(k+1)', 'x2(k+1)', 'p(k)', 'y(k)'}}, 4) ...
+))
 
 
 %% Test Jacobian calculation functions
