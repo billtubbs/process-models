@@ -38,11 +38,9 @@ function xakp1 = arom3_StateFcnRodin(xak, uk, dt, params)
 %        6e5 / 1e5];  % p(2) (normalized)
 
     % Calculate next states of process model;
-    xk = xak(1:3);
-    pk = xak(4:5);
-    xkp1 = arom3_StateFcn(xk, pk, dt, params);
+    xkp1 = arom3_StateFcn(xak(1:3), xak(4:5), dt, params);
 
     % Augmented states are discrete-time integrators
-    xakp1 = [xkp1; pk];
+    xakp1 = [xkp1; xak(4:5) + uk];
 
 end

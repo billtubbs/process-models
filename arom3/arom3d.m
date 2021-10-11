@@ -3,7 +3,7 @@ function [xkp1, yk] = arom3d(t, xk, pk, params, dt)
 % Discrete time approximation of aromatization process 
 % model with 3 states.
 % 
-% Solves ODE to compute x(k+1).
+% Solves ODE using ode45 to compute x(k+1).
 % 
 % See file arom3.m
 %

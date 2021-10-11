@@ -1,5 +1,19 @@
-% Test cstr5d.m
+% Tests the following functions:
+%
+%  - arom3d.m, 
+%  - arom3_StateFcn.m
+%  - arom3_MeasurementFcn.m
+%  - arom3_StateFcnRodin.m
+%  - arom3_MeasurementFcnRodin2.m
+%  - arom3_StateJacobianFcnRodin.m
+%  - arom3_MeasurementJacobianFcnRodin2.m
+%
+% To run this test use the following command:
+%
+% >> runtests test_EKF_observer
+%
 
+% Initialization for each test
 clear all;
 seed = 0;
 rng(seed)
@@ -14,10 +28,12 @@ nu = size(p0, 1);
 y0 = arom3_measurements(x0);
 ny = size(y0, 1);
 
+% sample period in minutes
+dt = 5/60;
+
 
 %% Iterative simulation
 
-dt = 5/60;  % sample period in minutes
 t_stop = 50;  % length of simulation (hours)
 nT = t_stop / dt;  % number of sample periods
 t = 0;
@@ -37,7 +53,6 @@ x0_test = [741.3093;
            533.3858];
 assert(all(abs(X(end,:)' - x0_test) < 0.01))
 
-return
 
 %% Replicate simulation in Robertson and Lee (1998)
 
@@ -77,10 +92,27 @@ for i = 1:nT
     k = k_ind(i);
     p = P(i, :)';
     t = t_sim(k_ind == k);
-    [x, y] = arom3d(t, x, p, params, dt);
+    X(i, :) = x';
+    [xkp1, y] = arom3d(t, x, p, params, dt);
     y_m = y + V(i, :)';
     Y_m(i, :) = y_m';
-    X(i, :) = x';
+
+    % Check observer functions
+    xkp1_2 = arom3_StateFcn(x, p, dt, params);
+    assert(all(abs(xkp1_2 - xkp1) < 1e-10))
+    y_2 = arom3_MeasurementFcn(x, p, dt, params);
+    assert(isequal(y_2, y))
+
+    xa = [x; p];
+    u = [];
+    xakp1 = arom3_StateFcnRodin(xa, u, dt, params);
+    assert(all(abs(xakp1 - [xkp1; p]) < 1e-10))
+
+    y_3 = arom3_MeasurementFcnRodin2(xa, u, dt, params);
+    assert(isequal(y_3, y))
+
+    x = xkp1;
+    
 end
 
 % Simulation results
@@ -144,3 +176,71 @@ assert(all(abs(T_sim - T_test) < 1, [1 2]))
 % grid on
 % 
 % linkaxes([ax1 ax2], 'x')
+
+
+%% Test Jacobian calculation functions
+%
+%   F = df/dxak = arom3_StateJacobianFcnRodin(xak,uk,params)
+%   H = dh/dxak = arom3_MeasurementJacobianFcn(xak,uk,params)
+%
+% where:
+%   f = arom3_StateFcnRodin
+%   h = arom3_MeasurementJacobianFcnRodin2(xak,uk,params)
+%
+
+% Number of states of augmented model
+na = 5;
+
+% Estimate Jacobian of state transition function
+F_est = nan(na, na);
+e = 0.01;
+uk = [];
+xak = [x0; p0];
+for i = 1:na
+    for j = 1:na
+        dxa = zeros(na, 1);
+        dxa(j) = e;
+        xak1 = xak - dxa;
+        xak2 = xak + dxa;
+        f1 = arom3_StateFcnRodin(xak1,uk,dt,params);
+        f2 = arom3_StateFcnRodin(xak2,uk,dt,params);
+        F_est(i, j) = (f2(i) - f1(i)) / (2 * dxa(j));
+    end
+end
+
+F_calc = arom3_StateJacobianFcnRodin(xak,uk,dt,params);
+% [round(F_est, 4) round(F_calc, 4)]
+assert(isequal(round(F_est, 4), round(F_calc, 4)))
+F_test = [
+    0.7738   -0.0111         0   -1.0237    1.0310;
+   -0.1346    0.9819         0   -0.9005         0;
+    0.1346    0.0097    0.9917    0.9005         0;
+         0         0         0    1.0000         0;
+         0         0         0         0    1.0000
+];
+assert(isequal(round(F_est, 4), F_test))
+
+% Estimate Jacobian of measurement function
+H_est = nan(ny, na);
+e = 0.0001;
+uk = randn();
+xak = [x0; p0];
+for i = 1:ny
+    for j = 1:na
+        dxa = zeros(na, 1);
+        dxa(j) = e;
+        xak1 = xak - dxa;
+        xak2 = xak + dxa;
+        h1 = arom3_MeasurementFcnRodin2(xak1,uk,dt,params);
+        h2 = arom3_MeasurementFcnRodin2(xak2,uk,dt,params);
+        H_est(i, j) = (h2(i) - h1(i)) / (2 * dxa(j));
+    end
+end
+
+H_calc = arom3_MeasurementJacobianFcnRodin2(xak,uk,dt,params);
+% [H_est H_calc]
+
+assert(isequal(round(H_est, 4), round(H_calc, 4)))
+H_test = [     1     0     0     0     0
+               0     0     1     0     0];
+assert(isequal(round(H_est, 4), H_test))
