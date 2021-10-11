@@ -1,4 +1,16 @@
-% test pend_xkp1.m and pend_yk.m
+% test the following files:
+%
+% pend_xkp1.m
+% pend_yk.m
+% pend_StateFcn
+% pend_MeasurementFcn.m
+% pend_F
+% pend_H
+%
+% To run this test use the following command:
+%
+% >> runtests test_EKF_observer
+%
 
 Ts = 0.1;  % sampling period
 
@@ -80,16 +92,18 @@ assert(isequal( ...
 
 %% Test Jacobian calculation functions
 %
-%   F = df/dxak = pend_F(xk,uk,params)
-%   H = dh/dxak = pend_H(xk,uk,params)
+%   F = df/dxak = pend_F(xak,uk,params)
+%   H = dh/dxak = pend_H(xak,uk,params)
 %
 % where:
 %   f = pend_StateFcn
 %   h = pend_MeasurementFcn(xak,uk,params)
 %
 
-% Jacobian of state transition function
+% Number of states of augmented model
 na = 3;
+
+% Estimate Jacobian of state transition function
 F_est = nan(na, na);
 e = 0.0001;
 uk = randn();
@@ -113,7 +127,7 @@ F_test = [    1.0000    0.1000         0
                    0         0    1.0000];
 assert(isequal(round(F_est, 4), F_test))
 
-% Jacobian of measurement function
+% Estimate Jacobian of measurement function
 H_est = nan(1, na);
 e = 0.0001;
 uk = randn();
@@ -132,4 +146,3 @@ end
 assert(isequal(round(H_est, 4), round(pend_H(xak,uk,params), 4)))
 H_test = [1 0 0];
 assert(isequal(round(H_est, 4), H_test))
-

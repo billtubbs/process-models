@@ -26,7 +26,8 @@ function xkp1 = pend_xkp1(xk,uk,params)
 	dt = params.dt;
 
     % x(k+1)
-    xkp1 = [dt*xk(2) + xk(1); 
-        -g*dt/L*sin(xk(1)) - K*dt/m*xk(2)+xk(2)] + [0; dt/(m*L^2)]*uk;
+    xkp1 = xk + dt*[xk(2); 
+                    -(g/L*sin(xk(1)) + K/m*xk(2))] ...
+           + [0; dt/(m*L^2)] * uk;
 
 end
