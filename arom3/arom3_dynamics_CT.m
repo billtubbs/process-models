@@ -52,11 +52,6 @@ function dx = arom3_dynamics_CT(x, p, params)
     V = params.V;  % effective reactor volume, [m^3]
     q = params.q;  % inlet and outlet volumetric flow rate, [m^3/h]
 
-    % Nominal values of the states and parameters
-    x0 = [params.T0;   % reaction temperature, [K]
-          params.Co_C7H16;   % outlet concentration of heptane, [gmol/m^3]
-          params.Co_C7H8];   % outlet concentration of toluene, [gmol/m^3]
-
     % Parameter values from normalized values in p(k)
     k0 = p(1) .* 1e8;  % frequency or pre-exponential factor [h^-1]
     U = p(2) .* 1e5;  % overall heat transfer coefficient [J/(gmol.K)]
@@ -68,7 +63,7 @@ function dx = arom3_dynamics_CT(x, p, params)
 
     % Heat of reaction [J/gmol] as a function of temperature
     cD = params.cD;
-    DeltaH = cD(5) + cD(4)*x(1) + cD(1)*x(1)^4 + cD(2)*x(1)^3 + cD(3)*x(1)^2;
+    DeltaH = cD(5) + cD(4)*x(1) + cD(3)*x(1)^2 + cD(2)*x(1)^3 + cD(1)*x(1)^4;
 
     % Reaction rate constant
     rate_const = k0 * exp(-Ea / (R * x(1)));

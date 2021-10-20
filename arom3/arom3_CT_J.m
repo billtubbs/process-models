@@ -36,8 +36,6 @@ function J = arom3_CT_J(x, p, params)
     DeltaH = cD(5) + cD(4)*x(1) + cD(1)*x(1)^4 + cD(2)*x(1)^3 + cD(3)*x(1)^2;
 
     % Reaction rate constant
-    %rate_const = k0 * exp(-Ea / (R * x(1)));
-    
     rate_const = k0 * exp(-Ea / (R * x(1)));
 
 %     % dT/dt, rate of change of reaction temperature
