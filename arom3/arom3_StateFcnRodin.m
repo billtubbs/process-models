@@ -1,5 +1,5 @@
-function xakp1 = arom3_StateFcnRodin(xak, uk, dt, params)
-% xakp1 = arom3_StateFcnRodin(xak, uk, dt, params)
+function xakp1 = arom3_StateFcnRodin(xak, pk, dt, params)
+% xakp1 = arom3_StateFcnRodin(xak, pk, dt, params)
 % State transition function for the discrete-time model of 
 % the aromatization process augmented with two input
 % disturbances.
@@ -22,10 +22,12 @@ function xakp1 = arom3_StateFcnRodin(xak, uk, dt, params)
 % xa(2) : Ch, outlet concentration of heptane, [gmol/m^3]
 % xa(3) : Ct, outlet concentration of toluene, [gmol/m^3]
 %
-% Process disturbances (time-varying parameters)
-% xa(4) : k0, frequency factor, or pre-exponential factor [1/h]
-% xa(5) : U, overall heat transfer coefficient [J/(gmol.K)]
-% 
+% Random shock signals to generate RODD disturbances
+% xa(4) : Wp(1), RODD step disturbance applied to k0, the 
+%     frequency factor, or pre-exponential factor [1/h].
+% xa(5) : Wp(2), RODD step disturbance applied to U, the
+%     overall heat transfer coefficient [J/(gmol.K)]
+%
 % Output measurements
 % y(1) : x(1)
 % y(2) : x(3)
@@ -37,9 +39,12 @@ function xakp1 = arom3_StateFcnRodin(xak, uk, dt, params)
 %        5e8 / 1e8;  % p(1) (normalized)
 %        6e5 / 1e5];  % p(2) (normalized)
 
+    assert(isequal(size(xak), [5 1]))
+    assert(isequal(size(pk), [0 1]))
+
     % Calculate next states of process model;
     xk = xak(1:3);
-    pk = xak(4:5);
+    pk = [params.k0; params.U] + xak(4:5);
     xkp1 = arom3_StateFcn(xk, pk, dt, params);
 
     % Augmented states are discrete-time integrators

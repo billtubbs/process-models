@@ -21,9 +21,11 @@ function y = arom3_MeasurementFcnRodin1(xa, uk, dt, params)
 % xa(2) : Ch, outlet concentration of heptane, [gmol/m^3]
 % xa(3) : Ct, outlet concentration of toluene, [gmol/m^3]
 %
-% Process disturbances (time-varying parameters)
-% xa(4) : k0, frequency factor, or pre-exponential factor [1/h]
-% xa(5) : U, overall heat transfer coefficient [J/(gmol.K)]
+% Random shock signals to generate RODD disturbances
+% xa(4) : Wp(1), RODD step disturbance applied to k0, the 
+%     frequency factor, or pre-exponential factor [1/h].
+% xa(5) : Wp(2), RODD step disturbance applied to U, the
+%     overall heat transfer coefficient [J/(gmol.K)]
 % 
 % Output measurements
 % y(1) : x(1)

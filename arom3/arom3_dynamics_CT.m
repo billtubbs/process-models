@@ -1,5 +1,5 @@
-function dx = arom3_dynamics_CT(x, p, params)
-% dx = arom3_dynamics_CT(x, p, params)
+function dxdt = arom3_dynamics_CT(x, p, params)
+% dxdt = arom3_dynamics_CT(x, p, params)
 % Continous-time model of aromatization process with 3 states
 %
 % Description:
@@ -38,6 +38,10 @@ function dx = arom3_dynamics_CT(x, p, params)
 % See documentation on defining grey-box model files:
 % https://www.mathworks.com/help/ident/ug/creating-idnlgrey-model-files.html
 
+    % Check size of arguments
+    assert(isequal(size(x), [3 1]))
+    assert(isequal(size(p), [2 1]))
+
     % Constant parameter values:
     Ea = params.Ea;  % activation energy (J/gmol)
     R = params.R;  % gas constant (J/(gmol.K))
@@ -69,19 +73,19 @@ function dx = arom3_dynamics_CT(x, p, params)
     rate_const = k0 * exp(-Ea / (R * x(1)));
 
     % State equations
-    dx = nan(3, 1);
+    dxdt = nan(3, 1);
 
     % dT/dt, rate of change of reaction temperature
     % (x1 in Watanbe and H.)
-    dx(1) = q / V * (u(1) - x(1)) - DeltaH / (rho * Cp) * rate_const * x(2) ...
+    dxdt(1) = q / V * (u(1) - x(1)) - DeltaH / (rho * Cp) * rate_const * x(2) ...
         + U * A / (rho * Cp * V) * (u(3) - x(1));
 
     % dCh/dt, rate of change of heptane concentration
     % (x4 in Watanbe and H.)
-    dx(2) = q / V * (u(2) - x(2)) - rate_const * x(2);
+    dxdt(2) = q / V * (u(2) - x(2)) - rate_const * x(2);
 
     % dCt/dt, rate of change of toluene concentration
     % (x2 in Watanbe and H.)
-    dx(3) = -q / V * x(3) + rate_const * x(2);
+    dxdt(3) = -q / V * x(3) + rate_const * x(2);
 
 end

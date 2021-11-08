@@ -37,9 +37,9 @@ function xkp1 = arom3_StateFcn(xk, pk, dt, params)
 %       6e5 / 1e5];  % (normalized)
 
     % Continuous-time differential equations
-    dx = arom3_dynamics_CT(xk, pk, params);
+    dxdt = arom3_dynamics_CT(xk, pk, params);
 
     % Euler integration of continuous-time dynamics x' = f(x)
-    xkp1 = xk + dx * dt;
+    xkp1 = xk + dxdt * dt;
 
 end

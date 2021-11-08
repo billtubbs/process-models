@@ -22,9 +22,11 @@ function dfdxa = arom3_StateJacobianFcnRodin(xak, uk, dt, params)
 % xa(2) : Ch, outlet concentration of heptane, [gmol/m^3]
 % xa(3) : Ct, outlet concentration of toluene, [gmol/m^3]
 %
-% Process disturbances (time-varying parameters)
-% xa(4) : k0, frequency factor, or pre-exponential factor [1/h]
-% xa(5) : U, overall heat transfer coefficient [J/(gmol.K)]
+% Random shock signals to generate RODD disturbances
+% xa(4) : Wp(1), RODD step disturbance applied to k0, the 
+%     frequency factor, or pre-exponential factor [1/h].
+% xa(5) : Wp(2), RODD step disturbance applied to U, the
+%     overall heat transfer coefficient [J/(gmol.K)]
 % 
 % Output measurements
 % y(1) : xak(1)
@@ -37,9 +39,12 @@ function dfdxa = arom3_StateJacobianFcnRodin(xak, uk, dt, params)
 % p0 = [5e8 / 1e8;  % (normalized)
 %       6e5 / 1e5];  % (normalized)
 
+    assert(isequal(size(xak), [5 1]))
+    assert(isequal(size(uk), [0 1]))
+
     % Parameter values from normalized values in p(k)
-    k0 = xak(4) .* 1e8;  % frequency or pre-exponential factor [h^-1]
-    U = xak(5) .* 1e5;  % overall heat transfer coefficient [J/(gmol.K)]
+    k0 = params.k0 + xak(4) * 1e8;  % frequency or pre-exponential factor [h^-1]
+    U = params.U + xak(5) * 1e5;  % overall heat transfer coefficient [J/(gmol.K)]
 
     % Constant parameter values:
     Ea = params.Ea;  % activation energy (J/gmol)
