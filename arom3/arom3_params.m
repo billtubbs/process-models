@@ -75,3 +75,5 @@ x0 = [params.T0;   % reaction temperature, [K]
 p0 = [params.k0 / 1e8;
       params.U / 1e5];
 
+% Input matrix for disturbance signals
+Bw = [zeros(3, 2); eye(2)];
