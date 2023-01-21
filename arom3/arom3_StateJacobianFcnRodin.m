@@ -40,7 +40,7 @@ function dfdxa = arom3_StateJacobianFcnRodin(xak, uk, dt, params)
 %       6e5 / 1e5];  % (normalized)
 
     assert(isequal(size(xak), [5 1]))
-    assert(isequal(size(uk), [0 1]))
+    assert(isempty(uk))
 
     % Parameter values from normalized values in p(k)
     k0 = params.k0 + xak(4) * 1e8;  % frequency or pre-exponential factor [h^-1]

@@ -40,7 +40,7 @@ function xakp1 = arom3_StateFcnRodin(xak, pk, dt, params)
 %        6e5 / 1e5];  % p(2) (normalized)
 
     assert(isequal(size(xak), [5 1]))
-    assert(isequal(size(pk), [0 1]))
+    assert(isempty(pk))
 
     % Calculate next states of process model;
     xk = xak(1:3);
