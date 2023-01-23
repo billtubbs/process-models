@@ -4,20 +4,19 @@ function xkp1 = pend_xkp1(xk,uk,params)
 % pendulum system.
 %
 % Arguments:
-% xk : state vector [x1; x2] where
-%    xk(1) : angle
-%    xk(2) : angular velocity.
-% uk : Torque input.
-% params : struct containing the parameter values
-%     listed below.
+%   xk : state vector [x1; x2] where
+%     xk(1) : angle
+%     xk(2) : angular velocity.
+%   uk : Torque input.
+%   params : struct containing the following 
+%     parameter values:
+%       params.K : coefficient of friction
+%       params.m : mass
+%       params.L : length
+%       params.g : gravitational acceleration
+%       params.dt : sampling interval
 %
-% params.K : coefficient of friction
-% params.m : mass
-% params.L : length
-% params.g : gravitational acceleration
-% params.T : sample period
-%
-    assert(isequal(size(xk),[2 1]))
+    assert(isequal(size(xk), [2 1]))
     assert(isscalar(uk))
     K = params.K;
 	m = params.m;
