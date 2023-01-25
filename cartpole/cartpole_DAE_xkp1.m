@@ -1,8 +1,9 @@
-function xkp1 = cartpole_xkp1(xk,uk,params)
-% xkp1 = cartpole_xkp1(xk,uk,params)
+function xkp1 = cartpole_DAE_xkp1(xk,uk,params)
+% xkp1 = cartpole_DAE_xkp1(xk,uk,params)
 % State transition function for simulating a 
 % discrete-time model of the non-linear cart-pole 
-% system using the DAEs defined by Florian (2007).
+% system using DAEs based on equations by 
+% Florian (2007).
 %
 % See script 'cartpole_DAEs.m'.
 %
