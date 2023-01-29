@@ -13,7 +13,7 @@ function draw_crane(y,params)
 %   params : struct
 %       Parameter values which are used to determine
 %       the rendered dimensions of the cart-pole:
-%           params.l : cable length
+%           params.L : cable length
 %           params.mc : cart mass
 %           params.mp : load mass.
 %
@@ -28,15 +28,14 @@ th = y(3);   % cable angle, anti-clockwise from
              % vertical down position
 
 % Parameters
-mp = params.mp;
-mc = params.mc;
-l = params.l;
+m_c = params.m_c;
+L = params.L;
+r = params.r;
 
 % Dimensions
-W = 1*sqrt(mc/5);  % cart width
-H = .5*sqrt(mc/5); % cart height
+W = 1*sqrt(m_c/5);  % cart width
+H = .5*sqrt(m_c/5); % cart height
 wr = .2; % wheel radius
-mr = .3*sqrt(mp); % mass radius
 
 % Positions
 y = wr/2 + H/2; % cart vertical position
@@ -46,8 +45,8 @@ w2x = x + .9*W/2 - wr;
 w2y = 0;
 
 % Pole end position
-px = x + l*sin(th);
-py = y - l*cos(th);
+px = x + L*sin(th);
+py = y + L*cos(th);
 
 % Colours
 edge_color = [0 0 0];
@@ -89,7 +88,7 @@ rectangle( ...
 
 % Load
 rectangle( ...
-    'Position',[px-mr/2,py-mr/2,mr,mr], ...
+    'Position',[px-r/2,py-r/2,r,r], ...
     'FaceColor',pole_face_color, ...
     'EdgeColor',edge_color ...
 )
@@ -108,9 +107,9 @@ axis equal
 % set(gca,'YTick',[])
 % set(gca,'XTick',[])
 xlim([-5 5]);
-ylim([-3.5 1]);
+ylim([-5.5 1]);
 set(gca,'XColor',axes_color,'YColor',axes_color)
-set(gcf,'Position',[50 500 800 400])
+set(gcf,'Position',[50 500 800 600])
 
 % box off
 drawnow
