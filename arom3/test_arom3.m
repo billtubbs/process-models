@@ -28,7 +28,7 @@ t_span = linspace(0, 100, 6001)';
 options = odeset('RelTol', 1e-7);
 [~, X] = ode45(odefun, t_span, x0, options);
 
-% Plot evolution of states
+% % Plot evolution of states
 % figure(1)
 % ax1 = subplot(3, 1, 1);
 % plot(t_span, X(:, 1))
@@ -94,7 +94,7 @@ end
 
 odefun = @ (t, x) arom3(t, x, p0, params);
 J_est = nan(n, n);
-e = 0.00001;
+e = 0.000001;
 for i = 1:n
     for j = 1:n
         dx = zeros(n, 1);
@@ -110,13 +110,13 @@ end
 % Test Jacobian
 x = x0;
 J = arom3_CT_J(x, p0, params);
-assert(all(abs(J - J_est) < 1e-7, [1 2]))
+assert(all(abs(J - J_est) < 1e-10, [1 2]))
 
 J_test = [
-   -2.7147   -0.1327         0;
-   -1.6149   -0.2167         0;
-    1.6149    0.1167   -0.1000];
-assert(isequal(round(J, 4), J_test))
+   -2.714733   -0.132664         0;
+   -1.614948   -0.216695         0;
+    1.614948    0.116695   -0.1000];
+assert(isequal(round(J, 6), J_test))
 
 % TODO: Need to test arom3_StateJacobianFcn.m
 
